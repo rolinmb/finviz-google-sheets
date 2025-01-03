@@ -1,6 +1,9 @@
-from util import fetch_finviz
+from util import *
+import sys
 
 if __name__ == "__main__":
-    data = fetch_finviz("META")
-    for row in data:
-        print(row)
+    if len(sys.argv) != 2:
+        print("src/main.py : __main__ :: ERROR ::: Must enter one alphabetical command line argument for underlying ticker.")
+        sys.exit(1)
+    ticker = check_user_input(sys.argv[1])
+    data_dict = fetch_finviz(ticker)
