@@ -1,5 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
+from googleapiclient.discovery import build
+from google.oauth2.service_account import Credentials
+
+CREDENTIALFILE = "src/first-footing-446718-m6-c9b09bd18afc.json"
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+CREDS = Credentials.from_service_account_file(CREDENTIALFILE, scopes=SCOPES)
+SPREADSHEETID = "finviz-google-sheets"
+service = build("sheets", "v4", credentials=CREDS)
+sheet = service.spreadsheets()
 
 FVURL = "https://finviz.com/quote.ashx?t="
 HEADERS = {
@@ -35,3 +44,16 @@ def fetch_finviz(ticker):
             data_dict[label] = value
     print("src/util.py : fetch_finviz() :: Successfully parsed finviz.com html table for $"+ticker)
     return data_dict
+
+def upload_data_dict(data_dict):
+    headers = list(data_dict.keys())
+    values = list(data_dict.values())
+    new_data = [headers, values]
+    RANGE = "Sheet1!A1"
+    sheet.values().update(
+        spreadsheetId = SPREADSHEETID,
+        range=RANGE,
+        valueInputOption="RAW",
+        body={ "values": new_data }
+    ).execute()
+    print("src/util.py : upload_data_dict() :: Successfully uploaded finviz.com html table data to google drive sheet")

@@ -7,3 +7,4 @@ if __name__ == "__main__":
         sys.exit(1)
     ticker = check_user_input(sys.argv[1])
     data_dict = fetch_finviz(ticker)
+    upload_data_dict(data_dict)
